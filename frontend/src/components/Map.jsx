@@ -5,10 +5,9 @@ import { motion } from "framer-motion";
 // 🔑 Imposta la tua chiave API (assicurati che sia definita nel file .env)
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_API_KEY;
 
-const Map = () => {
+const Map = ({ setIsFlat, isFlat }) => {
     const mapContainer = useRef(null);  // Riferimento al div della mappa
     const map = useRef(null);           // Riferimento all'istanza della mappa
-    const [isFlat, setIsFlat] = useState(false);
 
     useEffect(() => {
         if (map.current || !mapContainer.current) {
@@ -21,9 +20,7 @@ const Map = () => {
         // Map configuration
         map.current = new mapboxgl.Map({
             container: mapContainer.current,
-
-            style: "mapbox://styles/mapbox/dark-v10", 
-
+            style: "mapbox://styles/mapbox/dark-v10",
             center: [0, 0],
             zoom: 2,
             projection: "globe",
@@ -31,15 +28,23 @@ const Map = () => {
             bearing: 0,
         });
 
-        
-        map.current.on("load", () => {
+        // Aggiungi questa configurazione dopo la creazione della mappa
+        map.current.on("style.load", () => {
+            // Configurazione dell'atmosfera
             map.current.setFog({
-                range: [0.5, 10],
-                color: "#1a1a2f", 
-                'horizon-blend': 0.2, 
-                'high-color': '#000', 
-                'space-color': '#000', 
-                'star-intensity': 0.6 
+                "color": "rgb(186, 210, 235)", // colore dell'atmosfera
+                "high-color": "rgb(36, 92, 223)", // colore del cielo
+                "horizon-blend": 0.02, // sfumatura dell'orizzonte
+                "space-color": "rgb(11, 11, 25)", // colore dello spazio
+                "star-intensity": 0.6 // intensità delle stelle
+            });
+        });
+
+        map.current.on("load", () => {
+            // Aggiungi un layer per l'elevazione dei continenti
+            map.current.addSource('land-source', {
+                'type': 'geojson',
+                'data': 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_land.geojson'
             });
 
             let rotation = 0;
@@ -63,8 +68,10 @@ const Map = () => {
                         map.current.easeTo({
                             pitch: 45,
                             zoom: 2.5,
-                            duration: 1500,
-                            easing: (t) => t * (2 - t)
+                            duration: 2000,
+                            easing: (t) => {
+                                return t * (2 - t) * (1 + t);  // Easing cubico personalizzato
+                            }
                         });
 
                         setTimeout(() => {
@@ -80,6 +87,8 @@ const Map = () => {
                                 duration: 2000,
                                 easing: (t) => t * (2 - t)
                             });
+
+                            
                             
                             setTimeout(() => setIsFlat(true), 2000);
                         }, 1500);
@@ -95,7 +104,7 @@ const Map = () => {
             map.current?.remove();
             map.current = null;
         };
-    }, []);
+    }, [setIsFlat]);
 
     return (
         <motion.div
@@ -111,7 +120,6 @@ const Map = () => {
                     transition={{ duration: 2 }}
                     className="absolute inset-0 flex items-center justify-center bg-gray-900 text-white text-2xl"
                 >
-                    🌍 Animazione iniziale...
                 </motion.div>
             )}
             <div ref={mapContainer} className="w-full h-full" />

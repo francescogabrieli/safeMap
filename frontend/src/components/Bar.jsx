@@ -1,32 +1,40 @@
-const Bar = () => {
+import CountUp from 'react-countup';
+
+const Bar = ({ isFlat }) => {
   return (
-    <nav className="bg-gradient-to-r from-gray-950 via-gray-900 to-gray-950 backdrop-blur-md bg-opacity-80 fixed top-0 w-full z-50 shadow-lg border-b border-gray-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16 items-center">
-          <div className="flex items-center space-x-2">
-            <h1 className="text-2xl font-extrabold text-cyan-300 drop-shadow-glow">
-              SafeMap
-            </h1>
-            <span
-              className="
-                text-2xl font-extrabold
-                bg-gradient-to-r from-blue-400 via-cyan-300 to-purple-400
-                bg-clip-text text-transparent
-                animate-gradient
-                bg-[length:200%_200%]
-              "
+    <nav className="bg-[#101820] backdrop-blur-lg bg-opacity-90 fixed top-0 w-full z-50 shadow-lg border-b border-cyan-500">
+      <div className="w-full px-6">
+        <div className="flex h-16 items-center justify-between">
+          <div className="flex items-center">
+            <svg 
+              className="w-8 h-8 text-cyan-500"
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2"
             >
-              - Real Time Disaster Map
-            </span>
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+            <div className="ml-2">
+              <h1 className="text-xl font-bold text-white tracking-wide">
+                SafeMap <span className="text-sm font-medium text-cyan-400">Global Disaster Monitoring System</span>
+              </h1>
+            </div>
           </div>
-          <div className="hidden md:flex space-x-4">
-            <a href="#" className="relative text-gray-300 hover:text-white transition duration-200 px-4 py-2 rounded-lg bg-gray-800 bg-opacity-30 backdrop-blur-md shadow-md hover:shadow-lg hover:bg-opacity-50">
-              About
-            </a>
-            <a href="#" className="relative text-gray-300 hover:text-white transition duration-200 px-4 py-2 rounded-lg bg-gray-800 bg-opacity-30 backdrop-blur-md shadow-md hover:shadow-lg hover:bg-opacity-50">
-              Contact
-            </a>
-          </div>
+
+          {isFlat && (
+            <div className="flex items-center text-white">
+              <span className="mr-2">Disasters today:</span>
+              <span className="text-cyan-400 font-bold text-xl">
+                <CountUp 
+                  end={500} 
+                  duration={2.5}
+                  separator="," 
+                />
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </nav>
